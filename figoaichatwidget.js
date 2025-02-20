@@ -1,1 +1,0 @@
-//FigoAILabs Website Chat Widget
