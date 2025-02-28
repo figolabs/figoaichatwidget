@@ -52,7 +52,7 @@
 		iframe.className = "figo-chat-iframe";
 		iframe.style = "width: 100%; height: 100%; border: none;";
 		iframe.allow = "microphone; clipboard-write; clipboard-read";
-		iframe.sandbox = "allow-scripts  allow-same-origin";
+		iframe.sandbox = "allow-scripts allow-forms allow-same-origin";
 
 		setTimeout(() => {
 			injectIframeStyles();
