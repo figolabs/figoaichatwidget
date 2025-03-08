@@ -120,6 +120,9 @@
 			}
 		}
 
+		iframe = createIframe();
+		iframeContainer.appendChild(iframe);
+
 		// Run on load and window resize
 		adjustForMobile();
 		injectIframeStyles();
