@@ -40,7 +40,7 @@
 		const closeBtn = document.createElement("button");
 		closeBtn.innerHTML = CLOSE_ICON_SVG;
 		closeBtn.className = "figo-chat-close-button";
-		closeBtn.style = `position: absolute; top: 8px; right: 8px; background: #fff; border-radius: 50%; border: none; cursor: pointer; z-index: 1001; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;`;
+		closeBtn.style = `position: absolute; top: 16px; right: 50%; left: 50%; background: #fff; border-radius: 50%; border: none; cursor: pointer; z-index: 1001; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;`;
 		closeBtn.addEventListener("click", () => hideIframe());
 		return closeBtn;
 	}
