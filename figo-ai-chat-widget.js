@@ -66,12 +66,10 @@
 			return;
 		}
 
-		const baseUrl = userConfig.baseUrl || BASE_URL;
-
 		config = {
 			...DEFAULT_WIDGET_BUTTON,
 			...userConfig,
-			iframeUrl: `${baseUrl}/chat/${userConfig.xClient}/${userConfig.assistantId}`,
+			iframeUrl: `${BASE_URL}/chat/${userConfig.xClient}/${userConfig.assistantId}`,
 		};
 
 		destroyWidget();
@@ -166,9 +164,8 @@
 	}
 
 	function handleIframeMessage(event) {
-		if (event.origin !== config.baseUrl || BASE_URL) return;
+		if (event.origin !== BASE_URL) return;
 		if (event.data.type === "CHAT_CLOSED") shutdown();
-		if (event.data.type === "CHAT_HIDE") hideIframe();
 	}
 
 	const injectIframeStyles = () => {
