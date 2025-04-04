@@ -7,6 +7,8 @@ declare global {
 		assistantId: string;
 		/** Configuration for the widget button */
 		widgetButton?: FigoWidgetButton;
+		/** Configuration for user info */
+		user?: { name: string; email: string; phoneNumber?: string };
 	}
 
 	type FigoWidgetButton =

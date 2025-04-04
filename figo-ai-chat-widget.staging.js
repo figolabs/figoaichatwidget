@@ -66,10 +66,16 @@
 			return;
 		}
 
+		const userObject = userConfig.user
+			? { fullName: userConfig.user.name, emailAddress: userConfig.user.email, mobilePhone: userConfig.user.phoneNumber }
+			: {};
+
+		const searchParams = new URLSearchParams(userObject).toString();
+
 		config = {
 			...DEFAULT_WIDGET_BUTTON,
 			...userConfig,
-			iframeUrl: `${BASE_URL}/chat/${userConfig.xClient}/${userConfig.assistantId}`,
+			iframeUrl: `${BASE_URL}/chat/${userConfig.xClient}/${userConfig.assistantId}?${searchParams}`,
 		};
 
 		destroyWidget();
