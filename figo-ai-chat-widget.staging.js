@@ -1,5 +1,5 @@
 (function () {
-	const BASE_URL = "https://chat.figolabs.ai";
+	const BASE_URL = "https://figoailabschat-git-staging-figo-team1.vercel.app";
 
 	const DEFAULT_WIDGET_BUTTON = {
 		widgetButton: {
@@ -66,11 +66,12 @@
 			return;
 		}
 
-        const userObject = userConfig.user
-        ? { fullName: userConfig.user.name, emailAddress: userConfig.user.email, mobilePhone: userConfig.user.phoneNumber }
-        : {};
-        
+		const userObject = userConfig.user
+			? { fullName: userConfig.user.name, emailAddress: userConfig.user.email, mobilePhone: userConfig.user.phoneNumber }
+			: {};
+
 		const searchParams = new URLSearchParams(userObject).toString();
+
 		config = {
 			...DEFAULT_WIDGET_BUTTON,
 			...userConfig,
