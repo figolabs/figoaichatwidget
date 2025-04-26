@@ -112,7 +112,7 @@
 			if (window.innerWidth <= 475) {
 				iframeContainer.style.width = "100vw";
 				iframeContainer.style.background = "none";
-				iframeContainer.style.height = "100vh";
+				iframeContainer.style.height = "100dvh";
 				iframeContainer.style.bottom = "0px";
 				iframeContainer.style.right = "0px";
 				iframeContainer.style.borderRadius = "0";
