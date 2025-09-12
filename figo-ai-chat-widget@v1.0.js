@@ -25,9 +25,44 @@
 
 	function createButton(text) {
 		const btn = document.createElement("button");
-		btn.className = "figo-chat-button";
-		btn.innerHTML = `<div style="display: flex; align-items: center; gap: 8px;">${ICON_SVG}<span>${text}</span></div>`;
-		btn.style = `position: fixed; bottom: 20px; right: 20px; background: #0070f3; color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 500; z-index: 1000; display: flex; align-items: center; justify-content: center;`;
+		btn.id = "figo-chat-button";
+		btn.innerHTML = `
+    <div style="display: flex; align-items: center; gap: 8px;">
+      ${ICON_SVG}
+      <span>${text}</span>
+    </div>
+  `;
+
+		// Inject CSS rules for the button (only once)
+		if (!document.getElementById("figo-chat-styles")) {
+			const style = document.createElement("style");
+			style.id = "figo-chat-styles";
+			style.textContent = `
+      #figo-chat-button {
+        position: fixed !important;
+        bottom: 20px !important;
+        right: 20px !important;
+        background: #0070f3 !important;
+        color: white !important;
+        border: none !important;
+        padding: 12px 20px !important;
+        border-radius: 8px !important;
+        cursor: pointer !important;
+        font-size: 14px !important;
+        font-weight: 500 !important;
+        z-index: 999 !important; /* max possible */
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+      }
+
+      #figo-chat-button:hover {
+        background: #005bb5 !important;
+      }
+    `;
+			document.head.appendChild(style);
+		}
+
 		return btn;
 	}
 
@@ -47,7 +82,7 @@
 		iframe.className = "figo-chat-iframe";
 		iframe.style = "width: 100%; height: 100%; border: none;";
 		iframe.allow = "microphone; clipboard-write; clipboard-read";
-		iframe.sandbox = "allow-scripts  allow-same-origin";
+		iframe.sandbox = "allow-scripts allow-forms allow-same-origin allow-popups allow-top-navigation allow-popups-to-escape-sandbox";
 
 		return iframe;
 	}
@@ -107,7 +142,7 @@
 
 		// Run on load and window resize
 		adjustForMobile();
-        injectIframeStyles()
+		injectIframeStyles();
 		window.addEventListener("resize", adjustForMobile);
 	}
 
