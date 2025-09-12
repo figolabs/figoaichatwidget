@@ -191,7 +191,6 @@
 				iframeContainer.style.borderRadius = "12px";
 			}
 		}
-
 		iframe = createIframe();
 		iframeContainer.appendChild(iframe);
 
