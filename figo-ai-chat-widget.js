@@ -68,10 +68,43 @@
 
 	function createCloseButton() {
 		const closeBtn = document.createElement("button");
+		closeBtn.id = "figo-chat-close-button";
 		closeBtn.innerHTML = CLOSE_ICON_SVG;
-		closeBtn.className = "figo-chat-close-button";
-		closeBtn.style = `position: absolute; top: 8px; right: 8px; background: #fff; border-radius: 50%; border: none; cursor: pointer; z-index: 1001; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;`;
 		closeBtn.addEventListener("click", () => hideIframe());
+
+		// Inject CSS rules for the close button (only once)
+		if (!document.getElementById("figo-chat-close-styles")) {
+			const style = document.createElement("style");
+			style.id = "figo-chat-close-styles";
+			style.textContent = `
+      #figo-chat-close-button {
+        position: absolute !important;
+        top: 8px !important;
+        right: 8px !important;
+        background: #fff !important;
+        border-radius: 50% !important;
+        border: none !important;
+        cursor: pointer !important;
+        z-index: 1001 !important; /* max stack */
+        width: 24px !important;
+        height: 24px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: unset !important;
+        min-width: unset !important;
+        max-width: unset !important;
+        min-height: unset !important;
+        max-height: unset !important;
+      }
+
+      #figo-chat-close-button:hover {
+        background: #f0f0f0 !important;
+      }
+    `;
+			document.head.appendChild(style);
+		}
+
 		return closeBtn;
 	}
 
