@@ -1,13 +1,9 @@
 (function () {
 	const BASE_URL = "https://chat.figolabs.ai";
 
-	const DEFAULT_WIDGET_BUTTON = {
-		widgetButton: {
-			backgroundColor: "#7351dd",
-			textColor: "#fff",
-			zIndex: 10000,
-			buttonText: "Ask AI",
-		},
+	const DEFAULT_CONFIG = {
+		defaultButton: true,
+		buttonText: "Ask AI",
 	};
 
 	const ICON_SVG = `
@@ -27,12 +23,46 @@
 		window.dispatchEvent(new CustomEvent("figoChatState", { detail: state }));
 	}
 
-	function createButton(config) {
-		console.log(config);
+	function createButton(text) {
 		const btn = document.createElement("button");
-		btn.className = "figo-chat-button";
-		btn.innerHTML = `<div style="display: flex; align-items: center; gap: 8px;">${ICON_SVG}<span>${config.buttonText}</span></div>`;
-		btn.style = `position: fixed; bottom: 20px; right: 20px; background: ${config.backgroundColor}; color: ${config.textColor}; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 500; z-index: ${config.zIndex}; display: flex; align-items: center; justify-content: center;`;
+		btn.id = "figo-chat-button";
+		btn.innerHTML = `
+    <div style="display: flex; align-items: center; gap: 8px;">
+      ${ICON_SVG}
+      <span>${text}</span>
+    </div>
+  `;
+
+		// Inject CSS rules for the button (only once)
+		if (!document.getElementById("figo-chat-styles")) {
+			const style = document.createElement("style");
+			style.id = "figo-chat-styles";
+			style.textContent = `
+      #figo-chat-button {
+        position: fixed !important;
+        bottom: 20px !important;
+        right: 20px !important;
+        background: #0070f3 !important;
+        color: white !important;
+        border: none !important;
+        padding: 12px 20px !important;
+        border-radius: 8px !important;
+        cursor: pointer !important;
+        font-size: 14px !important;
+        font-weight: 500 !important;
+        z-index: 999 !important; /* max possible */
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+      }
+
+      #figo-chat-button:hover {
+        background: #005bb5 !important;
+      }
+    `;
+			document.head.appendChild(style);
+		}
+
 		return btn;
 	}
 
@@ -52,11 +82,8 @@
 		iframe.className = "figo-chat-iframe";
 		iframe.style = "width: 100%; height: 100%; border: none;";
 		iframe.allow = "microphone; clipboard-write; clipboard-read";
-		iframe.sandbox = "allow-scripts allow-forms allow-same-origin";
+		iframe.sandbox = "allow-scripts allow-forms allow-same-origin allow-popups allow-top-navigation allow-popups-to-escape-sandbox";
 
-		setTimeout(() => {
-			injectIframeStyles();
-		}, 0);
 		return iframe;
 	}
 
@@ -66,24 +93,12 @@
 			return;
 		}
 
-        const userObject = userConfig.user
-        ? { fullName: userConfig.user.name, emailAddress: userConfig.user.email, mobilePhone: userConfig.user.phoneNumber }
-        : {};
-        
-		const searchParams = new URLSearchParams(userObject).toString();
-		config = {
-			...DEFAULT_WIDGET_BUTTON,
-			...userConfig,
-			iframeUrl: `${BASE_URL}/chat/${userConfig.xClient}/${userConfig.assistantId}?${searchParams}`,
-		};
+		config = { ...DEFAULT_CONFIG, ...userConfig, iframeUrl: `${BASE_URL}/chat/${userConfig.xClient}/${userConfig.assistantId}` };
 
 		destroyWidget();
 
-		if (config.widgetButton?.customButtonId) {
-			button = document.getElementById(config.widgetButton.customButtonId);
-			button.addEventListener("click", start);
-		} else {
-			button = createButton(config.widgetButton);
+		if (config.defaultButton) {
+			button = createButton(config.buttonText);
 			button.addEventListener("click", start);
 			document.body.appendChild(button);
 		}
@@ -111,7 +126,7 @@
 			if (window.innerWidth <= 475) {
 				iframeContainer.style.width = "100vw";
 				iframeContainer.style.background = "none";
-				iframeContainer.style.height = "100dvh";
+				iframeContainer.style.height = "100vh";
 				iframeContainer.style.bottom = "0px";
 				iframeContainer.style.right = "0px";
 				iframeContainer.style.borderRadius = "0";
@@ -125,22 +140,19 @@
 			}
 		}
 
-		iframe = createIframe();
-		iframeContainer.appendChild(iframe);
-
 		// Run on load and window resize
 		adjustForMobile();
 		injectIframeStyles();
 		window.addEventListener("resize", adjustForMobile);
 	}
 
-	function start() {
+	function start(e) {
 		if (!iframe) {
 			iframe = createIframe();
 			iframeContainer.appendChild(iframe);
 		}
 		iframeContainer.style.display = "block";
-		if (!config.widgetButton.customButtonId) button.style.display = "none";
+		button.style.display = "none";
 		emitState("Active");
 	}
 
@@ -175,6 +187,7 @@
 
 	const injectIframeStyles = () => {
 		const iframe = document.getElementById("figochat-widget");
+		console.log(iframe);
 		if (!iframe || !iframe.contentDocument) return;
 
 		const style = document.createElement("style");
