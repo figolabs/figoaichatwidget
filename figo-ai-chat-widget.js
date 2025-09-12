@@ -27,45 +27,40 @@
 		window.dispatchEvent(new CustomEvent("figoChatState", { detail: state }));
 	}
 
-	function createButton(text) {
+	function createButton(config) {
 		const btn = document.createElement("button");
-		btn.id = "figo-chat-button";
+		btn.className = "figo-chat-button";
 		btn.innerHTML = `
     <div style="display: flex; align-items: center; gap: 8px;">
       ${ICON_SVG}
-      <span>${text}</span>
+      <span>${config.buttonText}</span>
     </div>
   `;
 
-		// Inject CSS rules for the button (only once)
-		if (!document.getElementById("figo-chat-styles")) {
-			const style = document.createElement("style");
-			style.id = "figo-chat-styles";
-			style.textContent = `
-      #figo-chat-button {
-        position: fixed !important;
-        bottom: 20px !important;
-        right: 20px !important;
-        background: #0070f3 !important;
-        color: white !important;
-        border: none !important;
-        padding: 12px 20px !important;
-        border-radius: 8px !important;
-        cursor: pointer !important;
-        font-size: 14px !important;
-        font-weight: 500 !important;
-        z-index: 999 !important; /* max possible */
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-      }
+		// Apply strong inline styles with !important
+		btn.style.cssText = `
+    position: fixed !important;
+    bottom: 20px !important;
+    right: 20px !important;
+    background: ${config.backgroundColor} !important;
+    color: ${config.textColor} !important;
+    border: none !important;
+    border-radius: 8px !important;
+    cursor: pointer !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    z-index: ${config.zIndex} !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
 
-      #figo-chat-button:hover {
-        background: #005bb5 !important;
-      }
-    `;
-			document.head.appendChild(style);
-		}
+    /* resets */
+    min-width: unset !important;
+    min-height: unset !important;
+    max-width: unset !important;
+    max-height: unset !important;
+    padding: 12px 20px !important;
+  `;
 
 		return btn;
 	}
@@ -133,10 +128,10 @@
 			return;
 		}
 
-        const userObject = userConfig.user
-        ? { fullName: userConfig.user.name, emailAddress: userConfig.user.email, mobilePhone: userConfig.user.phoneNumber }
-        : {};
-        
+		const userObject = userConfig.user
+			? { fullName: userConfig.user.name, emailAddress: userConfig.user.email, mobilePhone: userConfig.user.phoneNumber }
+			: {};
+
 		const searchParams = new URLSearchParams(userObject).toString();
 		config = {
 			...DEFAULT_WIDGET_BUTTON,
@@ -191,7 +186,6 @@
 				iframeContainer.style.borderRadius = "12px";
 			}
 		}
-
 		iframe = createIframe();
 		iframeContainer.appendChild(iframe);
 
