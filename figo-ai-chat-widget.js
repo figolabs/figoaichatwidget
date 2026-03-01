@@ -28,7 +28,6 @@
 	}
 
 	function createButton(config) {
-		console.log(config);
 		const btn = document.createElement("button");
 		btn.className = "figo-chat-button";
 		btn.innerHTML = `<div style="display: flex; align-items: center; gap: 8px;">${ICON_SVG}<span>${config.buttonText}</span></div>`;
@@ -88,19 +87,12 @@
 			document.body.appendChild(button);
 		}
 
+		const isCenter = config.position === "CENTER";
+
 		iframeContainer = document.createElement("div");
-		iframeContainer.style = `
-            position: fixed; 
-            bottom: 20px; 
-            right: 20px; 
-            width: 400px; 
-            height: 600px; 
-            background: white; 
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15); 
-            display: none; 
-            z-index: 999; 
-            border-radius: 12px;
-        `;
+		iframeContainer.style.cssText = isCenter
+			? `position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 700px; max-height: 600px; height: 80dvh; background: white; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15); display: none; z-index: 999; border-radius: 12px;`
+			: `position: fixed; bottom: 20px; right: 20px; width: 400px; height: 600px; background: white; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15); display: none; z-index: 999; border-radius: 12px;`;
 
 		iframeContainer.appendChild(createCloseButton());
 		document.body.appendChild(iframeContainer);
@@ -110,17 +102,33 @@
 		function adjustForMobile() {
 			if (window.innerWidth <= 475) {
 				iframeContainer.style.width = "100vw";
-				iframeContainer.style.background = "none";
 				iframeContainer.style.height = "100dvh";
-				iframeContainer.style.bottom = "0px";
-				iframeContainer.style.right = "0px";
-				iframeContainer.style.borderRadius = "0";
-			} else {
+				iframeContainer.style.top = "0px";
+				iframeContainer.style.left = "0px";
+				iframeContainer.style.bottom = "";
+				iframeContainer.style.right = "";
+				iframeContainer.style.transform = "none";
 				iframeContainer.style.background = "none";
+				iframeContainer.style.borderRadius = "0";
+			} else if (isCenter) {
+				iframeContainer.style.width = "700px";
+				iframeContainer.style.height = "700px";
+				iframeContainer.style.top = "50%";
+				iframeContainer.style.left = "50%";
+				iframeContainer.style.bottom = "";
+				iframeContainer.style.right = "";
+				iframeContainer.style.transform = "translate(-50%, -50%)";
+				iframeContainer.style.background = "none";
+				iframeContainer.style.borderRadius = "12px";
+			} else {
 				iframeContainer.style.width = "400px";
 				iframeContainer.style.height = "600px";
 				iframeContainer.style.bottom = "20px";
 				iframeContainer.style.right = "20px";
+				iframeContainer.style.top = "";
+				iframeContainer.style.left = "";
+				iframeContainer.style.transform = "";
+				iframeContainer.style.background = "none";
 				iframeContainer.style.borderRadius = "12px";
 			}
 		}

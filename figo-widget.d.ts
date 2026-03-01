@@ -9,6 +9,12 @@ declare global {
 		widgetButton?: FigoWidgetButton;
 		/** Configuration for user info */
 		user?: { name: string; email: string; phoneNumber?: string };
+		/**
+		 * Position of the chat widget on screen.
+		 * - `"BOTTOM_RIGHT"` (default): anchored to the bottom-right corner.
+		 * - `"CENTER"`: centered on screen with a wider layout.
+		 */
+		position?: "BOTTOM_RIGHT" | "CENTER";
 	}
 
 	type FigoWidgetButton =
