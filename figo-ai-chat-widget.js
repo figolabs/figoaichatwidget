@@ -30,17 +30,80 @@
 	function createButton(config) {
 		const btn = document.createElement("button");
 		btn.className = "figo-chat-button";
-		btn.innerHTML = `<div style="display: flex; align-items: center; gap: 8px;">${ICON_SVG}<span>${config.buttonText}</span></div>`;
-		btn.style = `position: fixed; bottom: 20px; right: 20px; background: ${config.backgroundColor}; color: ${config.textColor}; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 500; z-index: ${config.zIndex}; display: flex; align-items: center; justify-content: center;`;
+		btn.innerHTML = `
+    <div style="display: flex; align-items: center; gap: 8px;">
+      ${ICON_SVG}
+      <span>${config.buttonText}</span>
+    </div>
+  `;
+
+		// Apply strong inline styles with !important
+		btn.style.cssText = `
+    position: fixed !important;
+    bottom: 20px !important;
+    right: 20px !important;
+    background: ${config.backgroundColor} !important;
+    color: ${config.textColor} !important;
+    border: none !important;
+    border-radius: 8px !important;
+    cursor: pointer !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    z-index: ${config.zIndex} !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    /* resets */
+    min-width: unset !important;
+    min-height: unset !important;
+    max-width: unset !important;
+    max-height: unset !important;
+    padding: 12px 20px !important;
+  `;
+
 		return btn;
 	}
 
 	function createCloseButton() {
 		const closeBtn = document.createElement("button");
+		closeBtn.id = "figo-chat-close-button";
 		closeBtn.innerHTML = CLOSE_ICON_SVG;
-		closeBtn.className = "figo-chat-close-button";
-		closeBtn.style = `position: absolute; top: 8px; right: 8px; background: #fff; border-radius: 50%; border: none; cursor: pointer; z-index: 1001; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;`;
 		closeBtn.addEventListener("click", () => hideIframe());
+
+		// Inject CSS rules for the close button (only once)
+		if (!document.getElementById("figo-chat-close-styles")) {
+			const style = document.createElement("style");
+			style.id = "figo-chat-close-styles";
+			style.textContent = `
+      #figo-chat-close-button {
+        position: absolute !important;
+        top: 8px !important;
+        right: 8px !important;
+        background: #fff !important;
+        border-radius: 50% !important;
+        border: none !important;
+        cursor: pointer !important;
+        z-index: 1001 !important; /* max stack */
+        width: 24px !important;
+        height: 24px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: unset !important;
+        min-width: unset !important;
+        max-width: unset !important;
+        min-height: unset !important;
+        max-height: unset !important;
+      }
+
+      #figo-chat-close-button:hover {
+        background: #f0f0f0 !important;
+      }
+    `;
+			document.head.appendChild(style);
+		}
+
 		return closeBtn;
 	}
 
@@ -51,7 +114,7 @@
 		iframe.className = "figo-chat-iframe";
 		iframe.style = "width: 100%; height: 100%; border: none;";
 		iframe.allow = "microphone; clipboard-write; clipboard-read";
-		iframe.sandbox = "allow-scripts allow-forms allow-same-origin";
+		iframe.sandbox = "allow-scripts allow-forms allow-same-origin allow-popups allow-popups-to-escape-sandbox";
 
 		setTimeout(() => {
 			injectIframeStyles();
@@ -65,10 +128,10 @@
 			return;
 		}
 
-        const userObject = userConfig.user
-        ? { fullName: userConfig.user.name, emailAddress: userConfig.user.email, mobilePhone: userConfig.user.phoneNumber }
-        : {};
-        
+		const userObject = userConfig.user
+			? { fullName: userConfig.user.name, emailAddress: userConfig.user.email, mobilePhone: userConfig.user.phoneNumber }
+			: {};
+
 		const searchParams = new URLSearchParams(userObject).toString();
 		config = {
 			...DEFAULT_WIDGET_BUTTON,
@@ -132,7 +195,6 @@
 				iframeContainer.style.borderRadius = "12px";
 			}
 		}
-
 		iframe = createIframe();
 		iframeContainer.appendChild(iframe);
 
