@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>FigoChat Widget Test</title>
+		<style>
+			body {
+				font-family: sans-serif;
+				padding: 40px;
+				background: #f5f5f5;
+			}
+			h1 {
+				color: #333;
+			}
+			p {
+				color: #666;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>FigoChat Widget Test Page</h1>
+		<p>The chat widget should appear in the bottom right corner.</p>
+
+		<script src="./figo-ai-chat-widget.min.js"></script>
+		<!-- <script src="./figo-ai-chat-widget.js"></script> -->
+		<script>
+			window.FigoChatWidget.init({
+				xClient: "YWktMTEzMzg3OTI5OTAyNjU5MTAzOA==",
+				assistantId: "61b5d2ee-b70b-4719-9087-3b3b1e7fbead",
+				position: "BOTTOM_RIGHT",
+				widgetButton: {
+					backgroundColor: "#f500eb",
+					textColor: "yellow",
+					buttonText: "Chat with us",
+					zIndex: 1000,
+				},
+			});
+		</script>
+	</body>
+</html>

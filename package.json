@@ -1,0 +1,31 @@
+{
+  "name": "figo-ai-chat-widget",
+  "version": "1.0.0",
+  "description": "Embeddable Figo AI chat widget",
+  "license": "MIT",
+  "main": "./figo-ai-chat-widget.js",
+  "types": "./figo-widget.d.ts",
+  "exports": {
+    ".": {
+      "types": "./figo-widget.d.ts",
+      "default": "./figo-ai-chat-widget.js"
+    }
+  },
+  "unpkg": "./figo-ai-chat-widget.min.js",
+  "jsdelivr": "./figo-ai-chat-widget.min.js",
+  "files": [
+    "figo-ai-chat-widget.js",
+    "figo-ai-chat-widget.min.js",
+    "figo-ai-chat-widget.staging.js",
+    "figo-widget.d.ts",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": true,
+  "keywords": [
+    "chat-widget",
+    "ai-widget",
+    "figo",
+    "iframe-widget"
+  ]
+}
