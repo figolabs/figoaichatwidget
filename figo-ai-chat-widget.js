@@ -135,9 +135,12 @@
 
 		const userObject = userConfig.user
 			? { fullName: userConfig.user.name, emailAddress: userConfig.user.email, mobilePhone: userConfig.user.phoneNumber }
-			: {};
+			: null;
 
-		const searchParams = new URLSearchParams(userObject).toString();
+		const searchParams = userObject
+			? new URLSearchParams(userObject).toString()
+			: new URLSearchParams({ _ref: deriveUserRef(userConfig.assistantId || "", userConfig.xClient || "") }).toString();
+
 		config = {
 			...DEFAULT_WIDGET_BUTTON,
 			...userConfig,
@@ -252,6 +255,9 @@
 	function handleIframeMessage(event) {
 		if (event.origin !== BASE_URL) return;
 		if (event.data.type === "CHAT_CLOSED") shutdown();
+		if (event.data.type === "figo:localStorage:set" && event.data.key && event.data.value) {
+			localStorage.setItem(event.data.key, event.data.value);
+		}
 	}
 
 	const injectIframeStyles = () => {
@@ -281,3 +287,27 @@
 		},
 	};
 })();
+
+function getUserRefStorageKey(assistantId, base64EntityId) {
+	return `${assistantId}__${base64EntityId}__userRef`;
+}
+
+function deriveUserRef(assistantId, base64EntityId) {
+	if (typeof window === "undefined") return null;
+
+	const envelope = parseUserRefEnvelope(assistantId, base64EntityId);
+	if (!envelope || Date.now() >= envelope.expiresAt) return null;
+	return envelope.ref;
+}
+
+function parseUserRefEnvelope(assistantId, base64EntityId) {
+	try {
+		const raw = localStorage.getItem(getUserRefStorageKey(assistantId, base64EntityId));
+		if (!raw) return null;
+		const parsed = JSON.parse(atob(raw));
+		if (typeof parsed !== "object" || parsed === null) return null;
+		return parsed;
+	} catch {
+		return null;
+	}
+}

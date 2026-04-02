@@ -158,6 +158,31 @@ If your site uses Content Security Policy, include:
 Content-Security-Policy: connect-src 'self' https://figolabs.ai https://*.figolabs.ai wss://*.figolabs.ai https://*.pusher.com wss://*.pusher.com;
 ```
 
+## Permissions-Policy Requirement (Microphone)
+
+If you see this browser error:
+
+```text
+[Violation] Permissions policy violation: microphone is not allowed in this document.
+```
+
+the host page is blocking microphone access via response headers.
+
+The widget iframe already includes `allow="microphone"`, but the host page must also allow the widget origin in `Permissions-Policy`.
+
+Use a header like:
+
+```text
+Permissions-Policy: microphone=(self "https://chat.figolabs.ai")
+```
+
+Notes:
+
+- `microphone=()` blocks microphone everywhere.
+- `microphone=(self)` only allows same-origin pages and blocks cross-origin iframes.
+- If your app is loaded inside another iframe, every parent frame in the chain must allow microphone too.
+- Microphone also requires HTTPS and browser site permission.
+
 ## npm Publish and jsDelivr Notes
 
 - The package is configured so npm consumers get JS + types.
