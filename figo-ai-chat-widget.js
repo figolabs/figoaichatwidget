@@ -258,6 +258,9 @@
 		if (event.data.type === "figo:localStorage:set" && event.data.key && event.data.value) {
 			localStorage.setItem(event.data.key, event.data.value);
 		}
+		if (event.data.type === "figo:localStorage:remove" && Array.isArray(event.data.keys)) {
+			event.data.keys.forEach((key) => localStorage.removeItem(key));
+		}
 	}
 
 	const injectIframeStyles = () => {
@@ -288,26 +291,21 @@
 	};
 })();
 
-function getUserRefStorageKey(assistantId, base64EntityId) {
-	return `${assistantId}__${base64EntityId}__userRef`;
-}
-
 function deriveUserRef(assistantId, base64EntityId) {
 	if (typeof window === "undefined") return null;
 
-	const envelope = parseUserRefEnvelope(assistantId, base64EntityId);
-	if (!envelope || Date.now() >= envelope.expiresAt) return null;
-	return envelope.ref;
-}
-
-function parseUserRefEnvelope(assistantId, base64EntityId) {
 	try {
-		const raw = localStorage.getItem(getUserRefStorageKey(assistantId, base64EntityId));
+		const sessionKey = btoa("_figo_session");
+		const raw = localStorage.getItem(sessionKey);
 		if (!raw) return null;
-		const parsed = JSON.parse(atob(raw));
-		if (typeof parsed !== "object" || parsed === null) return null;
-		return parsed;
+		const store = JSON.parse(atob(raw));
+		const scopeKey = `${assistantId}__${base64EntityId}`;
+		const envelope = store[scopeKey]?.userRef;
+		if (!envelope || Date.now() >= envelope.expiresAt) return null;
+		return envelope.ref;
 	} catch {
 		return null;
 	}
 }
+
+var FigoVersion = "Figo_v_1";
