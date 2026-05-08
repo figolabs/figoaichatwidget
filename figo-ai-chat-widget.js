@@ -1,5 +1,7 @@
 (function () {
+	// const BASE_URL = "http://localhost:3006";
 	const BASE_URL = "https://chat.figolabs.ai";
+	FigoVersion = "Figo_v_2";
 
 	const DEFAULT_WIDGET_BUTTON = {
 		widgetButton: {
@@ -112,9 +114,31 @@
 		return closeBtn;
 	}
 
+	function buildIframeUrl() {
+		const base = `${BASE_URL}/chat/${config.xClient}/${config.assistantId}`;
+		const userRef = deriveUserRef(config.assistantId, config.xClient);
+
+		// Stored session ref takes priority — user already accepted T&C
+		if (userRef) {
+			return `${base}?${new URLSearchParams({ _ref: userRef }).toString()}`;
+		}
+
+		// Fall back to explicit user object for pre-filling the form on first visit
+		if (config.user) {
+			const userObject = {
+				fullName: config.user.name,
+				emailAddress: config.user.email,
+				mobilePhone: config.user.phoneNumber,
+			};
+			return `${base}?${new URLSearchParams(userObject).toString()}`;
+		}
+
+		return base;
+	}
+
 	function createIframe() {
 		const iframe = document.createElement("iframe");
-		iframe.src = config.iframeUrl;
+		iframe.src = buildIframeUrl();
 		iframe.id = "figochat-widget";
 		iframe.className = "figo-chat-iframe";
 		iframe.style = "width: 100%; height: 100%; border: none;";
@@ -133,18 +157,9 @@
 			return;
 		}
 
-		const userObject = userConfig.user
-			? { fullName: userConfig.user.name, emailAddress: userConfig.user.email, mobilePhone: userConfig.user.phoneNumber }
-			: null;
-
-		const searchParams = userObject
-			? new URLSearchParams(userObject).toString()
-			: new URLSearchParams({ _ref: deriveUserRef(userConfig.assistantId || "", userConfig.xClient || "") }).toString();
-
 		config = {
 			...DEFAULT_WIDGET_BUTTON,
 			...userConfig,
-			iframeUrl: `${BASE_URL}/chat/${userConfig.xClient}/${userConfig.assistantId}?${searchParams}`,
 		};
 
 		destroyWidget();
@@ -307,5 +322,3 @@ function deriveUserRef(assistantId, base64EntityId) {
 		return null;
 	}
 }
-
-var FigoVersion = "Figo_v_1";
