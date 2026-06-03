@@ -1,7 +1,7 @@
 (function () {
 	// const BASE_URL = "http://localhost:3006";
 	const BASE_URL = "https://chat.figolabs.ai";
-	FigoVersion = "Figo_v_2";
+	FigoVersion = "Figo_v_3";
 
 	const DEFAULT_WIDGET_BUTTON = {
 		widgetButton: {
@@ -76,7 +76,7 @@
 		const closeBtn = document.createElement("button");
 		closeBtn.id = "figo-chat-close-button";
 		closeBtn.innerHTML = CLOSE_ICON_SVG;
-		closeBtn.addEventListener("click", () => hideIframe());
+		closeBtn.addEventListener("click", () => hideFromButton());
 
 		// Inject CSS rules for the close button (only once)
 		if (!document.getElementById("figo-chat-close-styles")) {
@@ -166,10 +166,10 @@
 
 		if (config.widgetButton?.customButtonId) {
 			button = document.getElementById(config.widgetButton.customButtonId);
-			button.addEventListener("click", start);
+			button.addEventListener("click", startFromButton);
 		} else {
 			button = createButton(config.widgetButton);
-			button.addEventListener("click", start);
+			button.addEventListener("click", startFromButton);
 			document.body.appendChild(button);
 		}
 
@@ -231,9 +231,45 @@
 		adjustForMobile();
 		injectIframeStyles();
 		window.addEventListener("resize", adjustForMobile);
+
+		// Restore last visibility state from localStorage
+		if (readVisibilityState() === "Active") {
+			applyShow();
+		}
 	}
 
-	function start() {
+	// --- Visibility state persistence ---
+
+	function getVisibilityStorageKey() {
+		return btoa("figo_widget_state__" + config.xClient + "__" + config.assistantId);
+	}
+
+	function readVisibilityState() {
+		try {
+			const key = getVisibilityStorageKey();
+			const raw = localStorage.getItem(key);
+			if (!raw) return null;
+			const data = JSON.parse(raw);
+			if (!data || typeof data.updatedAt !== "number") return null;
+			if (Date.now() - data.updatedAt > 24 * 60 * 60 * 1000) {
+				localStorage.removeItem(key);
+				return null;
+			}
+			return data.state; // "Active" | "Hidden"
+		} catch {
+			return null;
+		}
+	}
+
+	function writeVisibilityState(state) {
+		try {
+			const key = getVisibilityStorageKey();
+			localStorage.setItem(key, JSON.stringify({ state, updatedAt: Date.now() }));
+		} catch {}
+	}
+
+	// Core display logic (no localStorage checks)
+	function applyShow() {
 		if (!iframe) {
 			iframe = createIframe();
 			iframeContainer.appendChild(iframe);
@@ -243,20 +279,42 @@
 		emitState("Active");
 	}
 
-	function hideIframe() {
+	function applyHide() {
 		iframeContainer.style.display = "none";
 		button.style.display = "block";
 		emitState("Hidden");
 	}
 
+	// Button click handlers — write state to localStorage then apply
+	function startFromButton() {
+		writeVisibilityState("Active");
+		applyShow();
+	}
+
+	function hideFromButton() {
+		writeVisibilityState("Hidden");
+		applyHide();
+	}
+
+	// Public API — localStorage state supercedes the requested state
+	function start() {
+		const stored = readVisibilityState();
+		if (stored === "Hidden") return;
+		applyShow();
+	}
+
+	function hideIframe() {
+		const stored = readVisibilityState();
+		if (stored === "Active") return;
+		applyHide();
+	}
+
 	function shutdown() {
-		iframeContainer.style.display = "none";
 		if (iframe) {
 			iframe.remove();
 			iframe = null;
 		}
-		button.style.display = "block";
-		emitState("Hidden");
+		applyHide();
 	}
 
 	function destroyWidget() {
